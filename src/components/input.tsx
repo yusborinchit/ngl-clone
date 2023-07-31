@@ -20,7 +20,7 @@ function Input({ type, name, label, placeholder }: InputProps) {
         type={type}
         name={name}
         placeholder={placeholder}
-        className="w-full mt-1 border-gray-500 rounded placeholder:text-gray-400 focus-within:border-pink-500 focus-within:ring-pink-500"
+        className="w-full mt-1 border-gray-400 rounded placeholder:text-gray-400 focus-within:border-pink-500 focus-within:ring-pink-500"
       />
     </div>
   );
