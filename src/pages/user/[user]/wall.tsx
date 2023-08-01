@@ -1,19 +1,26 @@
 import Header from "@/components/header";
 import WallQuestion from "@/components/wall-question";
+import { type Question } from "@/types";
 import {
   createPagesServerClient,
   type Session,
 } from "@supabase/auth-helpers-nextjs";
 import { type GetServerSidePropsContext } from "next";
-import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
 
 interface UserWallProps {
   session?: Session;
+  username: string;
 }
 
-function UserWall({ session }: UserWallProps) {
-  const router = useRouter();
-  const { user } = router.query;
+function UserWall({ session, username }: UserWallProps) {
+  const [questions, setQuestions] = useState<Question[]>([]);
+
+  useEffect(() => {
+    fetch(`/api/questions/?username=${username}`)
+      .then((res) => res.json())
+      .then((data) => setQuestions(data.questions));
+  }, [username]);
 
   return (
     <>
@@ -23,15 +30,25 @@ function UserWall({ session }: UserWallProps) {
           {/* <div className="absolute inset-0 top-0 left-0 bg-gradient-to-t from-transparent via-30%-transparent to-white" /> */}
           <div className="absolute flex items-center gap-2 px-2 py-1 bg-white rounded bottom-3 left-3">
             <div className="w-2 rounded-full bg-gradient-to-t from-green-600 to-green-400 aspect-square" />
-            <h2 className="text-sm font-semibold">@{user}</h2>
+            <h2 className="text-sm font-semibold">@{username}</h2>
           </div>
         </header>
         <section className="py-4">
-          <h3 className="text-xl font-black capitalize"># Your Wall</h3>
-          <WallQuestion
-            userFrom="Anonn"
-            question="Lorem ipsum dolor sit amet consectetur, adipisicing elit. Facilis sapiente unde excepturi tempora dolores sunt, nobis deserunt atque voluptate? Sapiente ea numquam quisquam excepturi beatae magnam vitae vel modi nesciunt."
-          />
+          <h3 className="text-xl font-black capitalize"># Latest Questions</h3>
+          {questions ? (
+            <div className="grid gap-4 mt-6">
+              {questions.map((question) => (
+                <WallQuestion
+                  key={question.id}
+                  userFrom={question.sender}
+                  createdAt={question.createdAt}
+                  question={question.content}
+                />
+              ))}
+            </div>
+          ) : (
+            <>there is no questions</>
+          )}
         </section>
       </main>
     </>
@@ -59,6 +76,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   return {
     props: {
       session,
+      username: context.query.user,
     },
   };
 }
