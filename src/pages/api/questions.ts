@@ -26,6 +26,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   }
 
   const supabaseClient = createPagesServerClient({ req, res });
+
   const id = await getUserIdByUsername(username, supabaseClient);
 
   if (!id) {

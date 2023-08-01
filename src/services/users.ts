@@ -5,7 +5,7 @@ async function getUserIdByUsername(
   supabaseClient: SupabaseClient
 ) {
   const { data } = await supabaseClient
-    .from("user")
+    .from("users")
     .select("id")
     .eq("username", username)
     .single();

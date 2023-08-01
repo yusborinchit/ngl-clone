@@ -1,5 +1,6 @@
 import Header from "@/components/header";
 import WallQuestion from "@/components/wall-question";
+import { getUserIdByUsername } from "@/services/users";
 import { type Question } from "@/types";
 import {
   createPagesServerClient,
@@ -58,25 +59,23 @@ function UserWall({ session, username }: UserWallProps) {
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const supabaseClient = createPagesServerClient(context);
 
+  const username = context.query.username as string;
+  const id = await getUserIdByUsername(username, supabaseClient);
+
+  if (!username) {
+    return {
+      notFound: true,
+    };
+  }
+
   const {
     data: { session },
   } = await supabaseClient.auth.getSession();
 
-  const { data: user } = await supabaseClient
-    .from("users")
-    .select("*")
-    .eq("username", context.query.user)
-    .single();
-
-  if (!user)
-    return {
-      notFound: true,
-    };
-
   return {
     props: {
       session,
-      username: context.query.user,
+      username,
     },
   };
 }
