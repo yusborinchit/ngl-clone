@@ -6,6 +6,10 @@ import { useState } from "react";
 function SignUp() {
   const [confirmationSent, setConfirmationSent] = useState(false);
 
+  const handleSuccess = () => {
+    setConfirmationSent(true);
+  };
+
   return (
     <div className="grid min-h-screen px-4 mx-auto place-items-center">
       <div className="w-full">
@@ -21,7 +25,7 @@ function SignUp() {
               <p className="text-gray-500 ">Please check out your email box!</p>
             </section>
           ) : (
-            <SignUpForm onSuccess={() => setConfirmationSent(true)} />
+            <SignUpForm onSuccess={handleSuccess} />
           )}
         </main>
       </div>

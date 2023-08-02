@@ -16,3 +16,8 @@ export interface Question {
   content: string;
   createdAt: string;
 }
+
+interface FormErrors<FieldsErrors> {
+  formErrors: string[];
+  fieldErrors: FieldsErrors;
+}

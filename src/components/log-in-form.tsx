@@ -1,12 +1,28 @@
-import Input from "@/components/input";
-import { useSupabaseClient } from "@supabase/auth-helpers-react";
+import FormError from "@/components/form-error";
+import FormInput from "@/components/form-input";
+import { useAuth } from "@/hooks/useAuth";
+import { LogInSchema } from "@/schemas/form-schemas";
+import { type FormErrors } from "@/types";
 import Link from "next/link";
-import { useRouter } from "next/router";
-import { type FormEvent } from "react";
+import { useState, type FormEvent } from "react";
 
-function LogInForm() {
-  const router = useRouter();
-  const supabaseClient = useSupabaseClient();
+interface LogInErrors {
+  email?: string[];
+  password?: string[];
+}
+
+const DEFAULT_FORM_ERRORS: FormErrors<LogInErrors> = {
+  formErrors: [],
+  fieldErrors: { email: [], password: [] },
+};
+
+interface LogInFormProps {
+  onSuccess: () => void;
+}
+
+function LogInForm({ onSuccess }: LogInFormProps) {
+  const { logIn } = useAuth();
+  const [errors, setErrors] = useState(DEFAULT_FORM_ERRORS);
 
   const handleLogIn = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -14,34 +30,50 @@ function LogInForm() {
     const { currentTarget: form } = event;
     const formData = new FormData(form);
 
-    const email = formData.get("email") as string;
-    const password = formData.get("password") as string;
+    const email = formData.get("email");
+    const password = formData.get("password");
 
-    if (!email || !password) return alert("401 Error");
+    setErrors(DEFAULT_FORM_ERRORS);
+    const zodResult = LogInSchema.safeParse({ email, password });
 
-    const { error } = await supabaseClient.auth.signInWithPassword({
-      email,
-      password,
-    });
+    if (!zodResult.success) {
+      const { formErrors, fieldErrors } = zodResult.error.formErrors;
+      return setErrors({ formErrors, fieldErrors });
+    }
 
-    if (error) return alert(error.message);
-    router.push("/");
+    const supaResults = await logIn(zodResult.data);
+
+    if (supaResults.error) {
+      const { message } = supaResults.error;
+      return setErrors((prevErrors) => ({
+        ...prevErrors,
+        formErrors: [message],
+      }));
+    }
+
+    onSuccess();
   };
 
   return (
     <form onSubmit={handleLogIn} className="flex flex-col gap-8">
+      {errors.formErrors.length > 0 && (
+        <FormError error={errors.formErrors[0]} />
+      )}
+
       <div className="flex flex-col gap-4">
-        <Input
+        <FormInput
           type="email"
           name="email"
           label="Email"
           placeholder="exampleemail@gmail.com"
+          errors={errors.fieldErrors.email}
         />
-        <Input
+        <FormInput
           type="password"
           name="password"
           label="Password"
           placeholder="examplepassword123"
+          errors={errors.fieldErrors.password}
         />
       </div>
 

@@ -1,5 +1,5 @@
 import Logo from "@/components/logo";
-import { useSupabaseClient } from "@supabase/auth-helpers-react";
+import { useAuth } from "@/hooks/useAuth";
 import { type Session } from "@supabase/supabase-js";
 import { User } from "lucide-react";
 import Link from "next/link";
@@ -11,11 +11,14 @@ interface HeaderProps {
 
 function Header({ session }: HeaderProps) {
   const router = useRouter();
-  const supabaseClient = useSupabaseClient();
+  const { logOut } = useAuth();
 
   const handleLogOut = async () => {
-    const { error } = await supabaseClient.auth.signOut();
+    const { error } = await logOut();
+
+    // TODO: better error handling
     if (error) return alert(`Error ${error.message}`);
+
     router.reload();
   };
 
