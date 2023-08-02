@@ -1,6 +1,6 @@
 import FormError from "@/components/form-error";
 import FormInput from "@/components/form-input";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/hooks/use-auth";
 import { LogInSchema } from "@/schemas/form-schemas";
 import { type FormErrors } from "@/types";
 import Link from "next/link";

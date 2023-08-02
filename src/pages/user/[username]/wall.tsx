@@ -1,28 +1,24 @@
 import Header from "@/components/header";
 import QuestionInput from "@/components/question-input";
 import WallQuestion from "@/components/wall-question";
+import { useQuestions } from "@/hooks/use-questions";
 import { getUserIdByUsername } from "@/services/users";
-import { type Question } from "@/types";
 import {
   createPagesServerClient,
   type Session,
 } from "@supabase/auth-helpers-nextjs";
 import { type GetServerSidePropsContext } from "next";
-import { useEffect, useState } from "react";
 
 interface UserWallProps {
   session?: Session;
-  username: string;
+  user: {
+    id: string;
+    username: string;
+  };
 }
 
-function UserWall({ session, username }: UserWallProps) {
-  const [questions, setQuestions] = useState<Question[]>([]);
-
-  useEffect(() => {
-    fetch(`/api/questions/?username=${username}`)
-      .then((res) => res.json())
-      .then((data) => setQuestions(data.questions));
-  }, [username]);
+function UserWall({ session, user }: UserWallProps) {
+  const { questions, addQuestion } = useQuestions({ user });
 
   return (
     <>
@@ -32,16 +28,16 @@ function UserWall({ session, username }: UserWallProps) {
           {/* <div className="absolute inset-0 top-0 left-0 bg-gradient-to-t from-transparent via-30%-transparent to-white" /> */}
           <div className="absolute flex items-center gap-2 px-2 py-1 bg-white rounded bottom-3 left-3">
             <div className="w-2 rounded-full bg-gradient-to-t from-green-600 to-green-400 aspect-square" />
-            <h2 className="text-sm font-semibold">@{username}</h2>
+            <h2 className="text-sm font-semibold">@{user.username}</h2>
           </div>
         </header>
 
-        <QuestionInput />
+        <QuestionInput addQuestion={addQuestion} />
 
         <section className="mt-4">
           <h3 className="text-xl font-black capitalize"># Latest Questions</h3>
           {questions ? (
-            <div className="grid gap-4 mt-4">
+            <div className="grid gap-4 py-4">
               {questions.map((question) => (
                 <WallQuestion
                   key={question.id}
@@ -66,7 +62,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   const username = context.query.username as string;
   const id = await getUserIdByUsername(username, supabaseClient);
 
-  if (!username) {
+  if (!username || !id) {
     return {
       notFound: true,
     };
@@ -79,7 +75,10 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   return {
     props: {
       session,
-      username,
+      user: {
+        id,
+        username,
+      },
     },
   };
 }

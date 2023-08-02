@@ -1,5 +1,4 @@
 import Header from "@/components/header";
-import SearchInput from "@/components/search-input";
 import {
   createPagesServerClient,
   type Session,
@@ -14,9 +13,7 @@ function Home({ session }: HomeProps) {
   return (
     <>
       <Header session={session} />
-      <main className="max-w-md px-4 mx-auto">
-        <SearchInput />
-      </main>
+      <main className="max-w-md px-4 mx-auto">Hello world</main>
     </>
   );
 }

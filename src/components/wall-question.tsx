@@ -5,6 +5,8 @@ interface WallQuestionProps {
 }
 
 function WallQuestion({ userFrom, createdAt, question }: WallQuestionProps) {
+  console.log(createdAt);
+
   const date = new Date(Date.parse(createdAt));
   const formattedDate = Intl.DateTimeFormat("es-UR").format(date);
 
