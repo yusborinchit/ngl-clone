@@ -1,5 +1,5 @@
+import Icon from "@/components/lucide-icon";
 import { type PostgrestError } from "@supabase/supabase-js";
-import { Send } from "lucide-react";
 import { useRouter } from "next/router";
 import { type FormEvent } from "react";
 
@@ -26,7 +26,6 @@ function QuestionInput({ addQuestion }: QuestionInputProps) {
     const { error } = await addQuestion({ content: question });
 
     if (error) return alert(`Error: ${error.message}`);
-    router.reload();
   };
 
   return (
@@ -50,7 +49,7 @@ function QuestionInput({ addQuestion }: QuestionInputProps) {
             type="submit"
             className="grid px-1 ml-auto text-gray-900 transition-colors hover:text-pink-500 place-items-center"
           >
-            <Send strokeWidth="1.80px" />
+            <Icon name="send" strokeWidth="1.80px" />
           </button>
         </div>
       </div>
