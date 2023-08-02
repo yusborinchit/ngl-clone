@@ -1,4 +1,5 @@
 import Header from "@/components/header";
+import QuestionInput from "@/components/question-input";
 import WallQuestion from "@/components/wall-question";
 import { getUserIdByUsername } from "@/services/users";
 import { type Question } from "@/types";
@@ -34,10 +35,13 @@ function UserWall({ session, username }: UserWallProps) {
             <h2 className="text-sm font-semibold">@{username}</h2>
           </div>
         </header>
-        <section className="py-4">
+
+        <QuestionInput />
+
+        <section className="mt-4">
           <h3 className="text-xl font-black capitalize"># Latest Questions</h3>
           {questions ? (
-            <div className="grid gap-4 mt-6">
+            <div className="grid gap-4 mt-4">
               {questions.map((question) => (
                 <WallQuestion
                   key={question.id}
@@ -48,7 +52,7 @@ function UserWall({ session, username }: UserWallProps) {
               ))}
             </div>
           ) : (
-            <>there is no questions</>
+            <p className="mt-4">There is no questions</p>
           )}
         </section>
       </main>

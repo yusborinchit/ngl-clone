@@ -1,6 +1,6 @@
 import { type SupabaseClient } from "@supabase/supabase-js";
 
-async function getUserIdByUsername(
+export async function getUserIdByUsername(
   username: string,
   supabaseClient: SupabaseClient
 ) {
@@ -12,5 +12,3 @@ async function getUserIdByUsername(
 
   return data?.id;
 }
-
-export { getUserIdByUsername };

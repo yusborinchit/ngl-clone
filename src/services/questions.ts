@@ -1,7 +1,7 @@
 import { type SBQuestionUsers } from "@/types";
 import { type SupabaseClient } from "@supabase/supabase-js";
 
-async function getQuestionsByUserId(
+export async function getQuestionsByUserId(
   userId: string,
   supabaseClient: SupabaseClient
 ) {
@@ -17,5 +17,3 @@ async function getQuestionsByUserId(
 
   return data ?? [];
 }
-
-export { getQuestionsByUserId };
