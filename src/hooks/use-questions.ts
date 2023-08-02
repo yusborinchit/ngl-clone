@@ -1,4 +1,6 @@
+import { getQuestionById } from "@/services/questions";
 import { type Question } from "@/types";
+import getMappedSBQuestion from "@/utils/get-mapped-sb-question";
 import { useSessionContext } from "@supabase/auth-helpers-react";
 import { useEffect, useState } from "react";
 
@@ -30,7 +32,16 @@ export function useQuestions({ user }: UseQuestionsProps) {
       .select()
       .single();
 
+    if (error) return { error };
+
     const questionId = question.id;
+    const questionWithUser = await getQuestionById(questionId, supabaseClient);
+
+    if (!questionWithUser) return { error };
+
+    const mappedQuestion = getMappedSBQuestion(questionWithUser);
+    setQuestions((prevQuestions) => [mappedQuestion, ...prevQuestions]);
+
     return { error };
   };
 

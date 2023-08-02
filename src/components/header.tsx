@@ -1,8 +1,8 @@
 import Logo from "@/components/logo";
+import Icon from "@/components/lucide-icon";
 import SearchInput from "@/components/search-input";
 import { useAuth } from "@/hooks/use-auth";
 import { type Session } from "@supabase/supabase-js";
-import { User } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 
@@ -34,7 +34,7 @@ function Header({ session }: HeaderProps) {
             onClick={handleLogOut}
             className="grid p-2 ml-auto transition-colors bg-gray-100 rounded hover:bg-gray-200"
           >
-            <User width={24} height={24} />
+            <Icon name="user" width={24} height={24} />
           </button>
         ) : (
           <Link

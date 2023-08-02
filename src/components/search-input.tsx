@@ -1,4 +1,4 @@
-import { Search } from "lucide-react";
+import Icon from "@/components/lucide-icon";
 import { useRouter } from "next/router";
 import { type FormEvent } from "react";
 
@@ -34,7 +34,8 @@ function SearchInput() {
         className="flex-1 text-sm border-transparent rounded placeholder:text-gray-400 focus-within:border-transparent focus-within:ring-transparent"
       />
       <button className="px-4 group">
-        <Search
+        <Icon
+          name="search"
           width={20}
           height={20}
           className="transition-colors group-hover:text-pink-500"
