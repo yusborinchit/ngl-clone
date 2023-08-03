@@ -32,16 +32,21 @@ function UserWall({ session, user }: UserWallProps) {
           </div>
         </header>
 
-        <QuestionInput addQuestion={addQuestion} />
+        <section className="mt-8">
+          <h3 className="text-xl font-black capitalize"># Your Question</h3>
+          <QuestionInput addQuestion={addQuestion} />
+        </section>
 
-        <section className="mt-4">
+        <section className="mt-8">
           <h3 className="text-xl font-black capitalize"># Latest Questions</h3>
           {questions ? (
-            <div className="grid gap-4 py-4">
+            <div className="grid gap-4 pt-4 pb-4">
               {questions.map((question) => (
                 <WallQuestion
                   key={question.id}
-                  userFrom={question.sender}
+                  id={question.id}
+                  receiverId={question.receiverId}
+                  sender={question.sender}
                   createdAt={question.createdAt}
                   question={question.content}
                 />

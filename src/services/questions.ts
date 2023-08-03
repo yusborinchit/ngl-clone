@@ -9,7 +9,7 @@ export async function getQuestionById(
     .from("questions")
     .select<string, SBQuestionUsers>(
       `
-      id, content, created_at,
+      id, content, created_at, receiver_id,
       users:sender_id (username)
       `
     )
@@ -27,7 +27,7 @@ export async function getQuestionsByUserId(
     .from("questions")
     .select<string, SBQuestionUsers>(
       `
-      id, content, created_at,
+      id, content, created_at, receiver_id,
       users:sender_id (username)
       `
     )

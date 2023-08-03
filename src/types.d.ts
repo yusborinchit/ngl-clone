@@ -7,11 +7,12 @@ export interface SBQuestion {
 }
 
 export interface SBQuestionUsers extends Omit<SBQuestion, "sender_id"> {
-  users: { username?: string };
+  users?: { username: string };
 }
 
 export interface Question {
   id: string;
+  receiverId: string;
   sender?: string;
   content: string;
   createdAt: string;

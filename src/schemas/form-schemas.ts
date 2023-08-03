@@ -3,6 +3,13 @@ import { z } from "zod";
 const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d)[A-Za-z\d]+$/;
 const usernameRegex = /^[a-zA-Z0-9_\.]+$/;
 
+export const QuestionSchema = z.object({
+  question: z
+    .string()
+    .min(1, { message: "Invalid question (1 character min)" })
+    .max(255, { message: "Invalid question (255 characters max)" }),
+});
+
 export const LogInSchema = z.object({
   email: z.string().email({ message: "Email not valid" }),
   password: z.string().nonempty({ message: "Password is required" }),
@@ -12,7 +19,7 @@ export const SignUpSchema = z.object({
   username: z
     .string()
     .min(3, { message: "Username must be at least 3 characters long" })
-    .max(32, { message: "Password cannot be more than 32 characters long" })
+    .max(32, { message: "Username cannot be more than 32 characters long" })
     .regex(usernameRegex, {
       message:
         "Username can only contain letters, numbers, underscores, and periods",

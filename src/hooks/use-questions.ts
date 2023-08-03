@@ -1,8 +1,10 @@
+import { QuestionSchema } from "@/schemas/form-schemas";
 import { getQuestionById } from "@/services/questions";
 import { type Question } from "@/types";
 import getMappedSBQuestion from "@/utils/get-mapped-sb-question";
 import { useSessionContext } from "@supabase/auth-helpers-react";
 import { useEffect, useState } from "react";
+import { z } from "zod";
 
 interface UseQuestionsProps {
   user: {
@@ -18,16 +20,18 @@ export function useQuestions({ user }: UseQuestionsProps) {
   useEffect(() => {
     fetch(`/api/questions/?username=${user.username}`)
       .then((res) => res.json())
-      .then((data) => setQuestions(data.questions));
+      .then(({ questions }: { questions: Question[] }) =>
+        setQuestions(questions)
+      );
   }, [user.username]);
 
-  const addQuestion = async ({ content }: { content: string }) => {
+  const addQuestion = async (questionData: z.infer<typeof QuestionSchema>) => {
     const { data: question, error } = await supabaseClient
       .from("questions")
       .insert({
         receiver_id: user.id,
         sender_id: session?.user.id ?? null,
-        content,
+        content: questionData.question,
       })
       .select()
       .single();

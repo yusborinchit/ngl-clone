@@ -1,16 +1,29 @@
-import Icon from "@/components/lucide-icon";
+import { QuestionSchema } from "@/schemas/form-schemas";
+import { type FormErrors } from "@/types";
 import { type PostgrestError } from "@supabase/supabase-js";
 import { useRouter } from "next/router";
-import { type FormEvent } from "react";
+import { useState, type FormEvent } from "react";
+import { z } from "zod";
+import TextAreaInput from "./text-area-input";
+
+interface QuetionErrors {
+  question?: string[];
+}
+
+const DEFAULT_FORM_ERRORS: FormErrors<QuetionErrors> = {
+  formErrors: [],
+  fieldErrors: { question: [] },
+};
 
 interface QuestionInputProps {
-  addQuestion: ({ content }: { content: string }) => Promise<{
+  addQuestion: (questionData: z.infer<typeof QuestionSchema>) => Promise<{
     error: PostgrestError | null;
   }>;
 }
 
 function QuestionInput({ addQuestion }: QuestionInputProps) {
   const router = useRouter();
+  const [errors, setErrors] = useState(DEFAULT_FORM_ERRORS);
 
   const handleNewQuestion = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -20,39 +33,38 @@ function QuestionInput({ addQuestion }: QuestionInputProps) {
 
     const question = formData.get("question") as string;
 
-    if (question.trim() === "") return;
+    setErrors(DEFAULT_FORM_ERRORS);
+    const zodResult = QuestionSchema.safeParse({ question });
+
+    if (!zodResult.success) {
+      const { formErrors, fieldErrors } = zodResult.error.formErrors;
+      return setErrors({ formErrors, fieldErrors });
+    }
 
     form.reset();
-    const { error } = await addQuestion({ content: question });
-
-    if (error) return alert(`Error: ${error.message}`);
+    await addQuestion(zodResult.data);
   };
 
   return (
-    <form onSubmit={handleNewQuestion} className="mt-4">
-      <label htmlFor="question-input" className="sr-only">
-        Order notes
-      </label>
-
-      <div className="overflow-hidden border border-gray-400 rounded focus-within:border-pink-500 focus-within:ring-1 focus-within:ring-pink-500">
-        <textarea
-          id="question-input"
-          rows={4}
-          name="question"
-          placeholder="Enter your question here..."
-          className="w-full align-top border-none rounded resize-none focus:ring-0"
-        ></textarea>
-
-        <div className="flex items-center gap-2 p-3 bg-white">
-          {/* TODO: add anon toggle */}
-          <button
-            type="submit"
-            className="grid px-1 ml-auto text-gray-900 transition-colors hover:text-pink-500 place-items-center"
-          >
-            <Icon name="send" strokeWidth="1.80px" />
-          </button>
-        </div>
-      </div>
+    <form onSubmit={handleNewQuestion} className="pt-4">
+      <TextAreaInput
+        label="Question"
+        name="question"
+        placeholder="Ask here..."
+        rows={4}
+      >
+        <button
+          type="submit"
+          className="px-4 py-2 ml-auto text-xs font-bold text-white capitalize rounded bg-gradient-to-tr from-orange-500 to-pink-500"
+        >
+          Submit
+        </button>
+      </TextAreaInput>
+      {errors.fieldErrors.question && (
+        <p className="mt-1 text-xs text-red-500">
+          {errors.fieldErrors.question[0]}
+        </p>
+      )}
     </form>
   );
 }
